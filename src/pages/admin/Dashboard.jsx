@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import { FaClipboardList, FaHourglassHalf, FaCheckCircle, FaUsers, FaEye } from "react-icons/fa";
 import LaporanLineChart from "../../components/LaporanLineChart";
 import AdminLayout from "../../layouts/AdminLayout";
 import axios from "axios"; // Import axios for data fetching
-import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils/dateformatter";
 import DashboardStats from "../../components/DashboardStats";
 
@@ -17,7 +15,6 @@ export default function Dashboard() {
   const [totalReports, setTotalReports] = useState(0);
   const [latestReports, setLatestReports] = useState([]);
   const [chartData, setChartData] = useState([]);
-  const navigate = useNavigate();
 
   // Fetching the statistics, latest reports, and chart data
   useEffect(() => {

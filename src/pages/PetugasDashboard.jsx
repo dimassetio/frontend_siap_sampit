@@ -27,32 +27,32 @@ export default function PetugasDashboard() {
   const page = pagination.currentPage;
   const limit = 10;
 
-  const fetchReports = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`/api/reports?page=${page}&limit=${limit}&status=${statusFilter}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      const data = await response.data;
-
-      setReports(data.data);
-      setPagination({
-        totalItems: data.totalItems,
-        totalPages: data.totalPages,
-        currentPage: data.currentPage
-      });
-      setTotalReports(data.totalItems);
-      setSummary(data.summary);
-
-    } catch (error) {
-      console.error('Error fetching reports:', error);
-    }
-  };
-
   useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`/api/reports?page=${page}&limit=${limit}&status=${statusFilter}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await response.data;
+
+        setReports(data.data);
+        setPagination({
+          totalItems: data.totalItems,
+          totalPages: data.totalPages,
+          currentPage: data.currentPage
+        });
+        setTotalReports(data.totalItems);
+        setSummary(data.summary);
+
+      } catch (error) {
+        console.error('Error fetching reports:', error);
+      }
+    };
+
     fetchReports();
   }, [page, statusFilter]);
 

@@ -1,4 +1,4 @@
-import { FaUser, FaEnvelope, FaPhone, FaEdit, FaCheckCircle, FaCommentDots, FaTimes } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone } from "react-icons/fa";
 import AdminLayout from "../layouts/AdminLayout";
 import { useEffect, useState } from "react";
 import Modal from "../components/Modal";
@@ -22,7 +22,6 @@ export default function LaporanDetail() {
   const { id } = useParams();
   const [laporan, setLaporan] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [timeline, setTimeline] = useState([]);
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -103,9 +102,12 @@ export default function LaporanDetail() {
     try {
       // Send DELETE request to the backend API
       const response = await axios.delete(`/api/reports/${id}`);
-
-      // Handle successful response
-      navigate('/admin/reports');
+      if (response.ok) {
+        // Handle successful response
+        navigate('/admin/reports');
+      } else {
+        alert("Gagal menghapus laporan")
+      }
     } catch (error) {
       console.error("Error deleting report:", error);
       alert("Error deleting the report"); // Show error message

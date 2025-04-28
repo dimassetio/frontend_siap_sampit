@@ -1,7 +1,7 @@
 // File: src/pages/MahasiswaDashboard.jsx
 import { Link, useNavigate } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
-import { FaCheckCircle, FaClipboardList, FaCog, FaEye, FaHourglassHalf, FaSpinner } from "react-icons/fa";
+import { FaCheckCircle, FaClipboardList, FaCog, FaEye, FaHourglassHalf } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { formatDate } from "../utils/dateformatter";

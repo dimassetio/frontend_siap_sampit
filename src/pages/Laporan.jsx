@@ -53,7 +53,6 @@ export default function LaporanIndex() {
   };
 
   const navigate = useNavigate();
-  const laporanList = [];
   return (
     <AdminLayout>
       <div className="p-6">
