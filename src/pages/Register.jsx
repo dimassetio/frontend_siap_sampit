@@ -1,5 +1,5 @@
 // File: src/pages/Register.jsx
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   FaUser,
   FaIdBadge,
@@ -7,13 +7,55 @@ import {
   FaLock,
   FaEye,
   FaEyeSlash,
+  FaMobile,
 } from "react-icons/fa";
 import logo from "../assets/logo.png";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { login } = useContext(AuthContext);
 
+  const [nim, setNim] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/users/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nim, name, email, phone, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Simpan token ke localStorage atau context
+        login(data.user, data.user.token);
+        // Redirect berdasarkan role
+        navigate('/mahasiswa');
+      } else {
+        alert(data.message || 'Registrasi gagal');
+      }
+    } catch (err) {
+      console.log(err)
+      alert('Terjadi kesalahan: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white shadow-md rounded-xl p-8 w-full max-w-md">
@@ -35,6 +77,9 @@ export default function Register() {
               type="text"
               placeholder="Nama Lengkap"
               className="w-full bg-transparent outline-none text-sm"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
             />
           </div>
 
@@ -45,6 +90,22 @@ export default function Register() {
               type="text"
               placeholder="NIM"
               className="w-full bg-transparent outline-none text-sm"
+              value={nim}
+              onChange={(e) => setNim(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Phone */}
+          <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
+            <FaMobile className="text-gray-400 mr-3" />
+            <input
+              type="text"
+              placeholder="No. Hp"
+              className="w-full bg-transparent outline-none text-sm"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
             />
           </div>
 
@@ -55,6 +116,9 @@ export default function Register() {
               type="email"
               placeholder="Email"
               className="w-full bg-transparent outline-none text-sm"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
 
@@ -65,6 +129,9 @@ export default function Register() {
               type={showPassword ? "text" : "password"}
               placeholder="Kata Sandi"
               className="w-full bg-transparent outline-none text-sm"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
             <div
               className="absolute right-3 cursor-pointer text-gray-400"
@@ -93,9 +160,10 @@ export default function Register() {
           {/* Submit */}
           <button
             type="submit"
+            onClick={loading ? null : handleRegister}
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-semibold"
           >
-            Daftar
+            {loading ? 'Loading...' : 'Daftar'}
           </button>
 
           <p className="text-sm text-center mt-4">

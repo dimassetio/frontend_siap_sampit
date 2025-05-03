@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { formatDate } from "../utils/dateformatter";
+import { useNavigate } from "react-router-dom";
 
 const TutorialSection = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -78,21 +79,47 @@ const TutorialSection = () => {
 
 export default function Homepage() {
   const user = JSON.parse(localStorage.getItem('user'));
+  const navigate = useNavigate();
+
   const [latestReports, setLatestReports] = useState([]);
+  const [pagination, setPagination] = useState({
+    totalItems: 0,
+    totalPages: 0,
+    currentPage: 1
+  });
+  const page = pagination.currentPage;
+  const limit = 10;
+
+  const fetchReports = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`/api/reports?page=${page}&limit=${limit}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await response.data;
+
+      setLatestReports(data.data);
+      setPagination({
+        totalItems: data.totalItems,
+        totalPages: data.totalPages,
+        currentPage: data.currentPage
+      });
+
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetching latest reports
-        const reportsResponse = await axios.get("/api/reports?limit=5");
-        setLatestReports(reportsResponse.data.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+    fetchReports();
+  }, [page]);
 
-    fetchData();
-  }, []);
+  const handlePageChange = (newPage) => {
+    setPagination((prev) => ({ ...prev, currentPage: newPage }));
+  };
 
   return (
     <div className="font-sans bg-gray-100">
@@ -180,16 +207,17 @@ export default function Homepage() {
                 <tr className="text-sm text-gray-600 border-b">
                   <th className="py-2">No</th>
                   <th className="py-2">Judul</th>
+                  <th className="py-2">Deskripsi</th>
                   <th className="py-2">Status</th>
-                  <th className="py-2">Pelapor</th>
                   <th className="py-2">Tanggal</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
                 {latestReports && latestReports.map((laporan, i) => (
-                  <tr key={laporan.id} className="border-b hover:bg-gray-50">
+                  <tr onClick={() => navigate(`laporan/${laporan._id}`)} key={laporan.id} className="border-b hover:bg-gray-50">
                     <td className="py-2">{i + 1}</td>
                     <td className="py-2">{laporan.title}</td>
+                    <td className="py-2">{laporan.description}</td>
                     <td className="py-2">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium
                       ${laporan.status === "selesai"
@@ -203,12 +231,30 @@ export default function Homepage() {
                         {laporan.status}
                       </span>
                     </td>
-                    <td className="py-2">{laporan.userId.name}</td>
                     <td className="py-2">{formatDate(laporan.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            <div className="flex justify-end items-center mt-4 gap-4">
+              <button
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 1}
+                className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+              >
+                Prev
+              </button>
+              <span className="text-sm">
+                Halaman {page} dari {pagination.totalPages}
+              </span>
+              <button
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page === pagination.totalPages}
+                className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </section>

@@ -18,6 +18,7 @@ import MahasiswaDashboard from "./pages/MahasiswaDashboard";
 import Homepage from "./pages/Home";
 import PrivateRoute from "./components/PrivateRoute";
 import PetugasDashboard from "./pages/PetugasDashboard";
+import HomeDetailLaporan from "./pages/HomeDetailLaporan";
 
 function AppRoutes() {
   const { loading } = useContext(AuthContext);
@@ -34,6 +35,7 @@ function AppRoutes() {
     <Router>
       <Routes>
         <Route path="/" element={<Homepage />} />
+        <Route path="/laporan/:id" element={<HomeDetailLaporan />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {/* Role: Admin */}
